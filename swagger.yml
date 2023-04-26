@@ -1,0 +1,22 @@
+openapi: 3.0.2
+info:
+  title: Timetracker
+  version: 1.0.0
+paths:
+  /:
+    get:
+      tags:
+        - /
+      responses:
+        '200':
+          content:
+            text/html:
+              examples:
+                HTML:
+                  value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <title>Timetracker</title>\r\n</head>\r\n<body>\r\n</body>\r\n</html>"
+          description: The Vue.js based front
+      summary: Serve the front-end
+      description: Serve the front-end
+tags:
+  - name: /
+    description: ''
