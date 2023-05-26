@@ -2,6 +2,12 @@ openapi: 3.0.2
 info:
   title: Timetracker
   version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0'
+servers:
+  - url: 'http://localhost:3000/docs'
+    description: ''
 paths:
   /:
     get:
@@ -17,6 +23,31 @@ paths:
           description: The Vue.js based front
       summary: Serve the front-end
       description: Serve the front-end
+  /users:
+    get:
+      responses: { }
+    put:
+      responses:
+        '202':
+          description: Successful response
+        '404':
+          description: User not found
+    post:
+      responses:
+        '201':
+          description: User created
+      description: ''
+components:
+  schemas:
+    users:
+      description: |-
+        {
+        id: 1, 
+        email: "admin", 
+        password: "admin"
+        
+        }
+      type: object
 tags:
   - name: /
     description: ''

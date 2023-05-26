@@ -38,13 +38,44 @@
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" @click="showRegisterModal">
                     Sign Up
                 </button>
-
-                <!-- Modal -->
-
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="registerModalLabel">Sign Up</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 row">
+                        <label for="email" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="email" v-model="registerEmail">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="inputPassword"
+                                   v-model="registerPassword">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" @click="register">Register
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
@@ -55,13 +86,20 @@
     createApp({
         data() {
             return {
-                modalHandler: null
+                modalHandler: null,
+                registerEmail: null,
+                registerPassword: null
 
             }
         },
 
         methods: {
-
+            showRegisterModal: function () {
+                this.modalHandler = new bootstrap.Modal(document.getElementById('registerModal'), {
+                    keyboard: false
+                })
+                this.modalHandler.show()
+            },
             send: async function (method, url, body) {
                 await fetch(url, {
                     method,
@@ -80,7 +118,18 @@
 
                 })
             },
-
+            register: async function () {
+                //Send POST /users
+                const email = this.registerEmail
+                const password = this.registerPassword
+                try {
+                    await this.send('POST', '/users', {email, password});
+                    alert('User created')
+                    this.modalHandler.hide()
+                } catch (e) {
+                    console.log(e)
+                }
+            }
         }
     }).mount('#app')
 </script>
