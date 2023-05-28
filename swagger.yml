@@ -1,53 +1,138 @@
 openapi: 3.0.2
 info:
-  title: Timetracker
+  title: timetrack
   version: 1.0.0
-  license:
-    name: Apache 2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0'
-servers:
-  - url: 'http://localhost:3000/docs'
-    description: ''
 paths:
-  /:
-    get:
+  /users:
+    summary: Path used to manage the list of users.
+    description: >-
+      The REST endpoint/path used to list and create zero or more `User` entities.  This path contains a
+      `GET` and `POST` operation to perform the list and create tasks, respectively.
+    post:
+      requestBody:
+        description: A new `User` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
       tags:
-        - /
+        - /users
       responses:
-        '200':
+        '201':
+          description: Successful response.
+        '400':
           content:
             text/html:
               examples:
-                HTML:
-                  value: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <title>Timetracker</title>\r\n</head>\r\n<body>\r\n</body>\r\n</html>"
-          description: The Vue.js based front
-      summary: Serve the front-end
-      description: Serve the front-end
-  /users:
-    get:
-      responses: { }
-    put:
-      responses:
-        '202':
-          description: Successful response
-        '404':
-          description: User not found
+                'Invalid email: {reason}':
+                  value: 'Invalid email: {reason}'
+                Email and password are required:
+                  value: Email and password are required
+                Password must be at least 8 characters long:
+                  value: Password must be at least 8 characters long
+                Email must be in a valid format:
+                  value: Email must be in a valid format
+          description: Client side error
+        '409':
+          content:
+            text/html:
+              examples:
+                Email already exists:
+                  value: Email already exists
+          description: The email address provided already exists in the system.
+      operationId: createUser
+      summary: Create a User
+      description: Creates a new instance of a `User`.
+  /sessions:
+    summary: Path used to manage the list of sessions.
+    description: "The REST endpoint/path used to list and create zero or more `Session` entities.  This path\r\n      contains a `GET` and `POST` operation to perform the list and create tasks, respectively."
     post:
+      requestBody:
+        description: A new `Session` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schema'
+        required: true
       responses:
         '201':
-          description: User created
-      description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schema'
+          description: Successful response.
+        '400':
+          content:
+            text/html:
+              examples:
+                'Email and password are required:':
+                  value: Email and password are required
+          description: ' Bad Request'
+        '401':
+          content:
+            text/html:
+              examples:
+                'Invalid password:':
+                  value: Invalid password
+          description: Unauthorized
+        '404':
+          content:
+            text/html:
+              examples:
+                'User not found:':
+                  value: User not found
+          description: Not Found
+    delete:
+      responses:
+        '204':
+          description: ' Successful response.'
+        '400':
+          content:
+            text/html:
+              examples:
+                'Invalid authorization header:':
+                  value: Invalid authorization header
+          description: Bad Request
+        '401':
+          content:
+            text/html:
+              examples:
+                'Missing authorization header:':
+                  value: Missing authorization header
+                'Invalid session:':
+                  value: Invalid session
+          description: Unauthorized
 components:
   schemas:
-    users:
-      description: |-
-        {
-        id: 1, 
-        email: "admin", 
-        password: "admin"
-        
-        }
+    User:
+      title: Root Type for User
+      description: ''
       type: object
-tags:
-  - name: /
-    description: ''
+      properties:
+        id:
+          format: int32
+          description: A field that represents the unique identifier of the user.
+          type: integer
+          example: '12345'
+        email:
+          description: A field that represents the email address of the user.
+          type: string
+          example: john.doe@example.com
+        password:
+          description: A field that represents the password of the user.
+          type: string
+          example: MySecurePassword123
+      example:
+        id: 3
+        email: email@example.com
+        password: pass123
+    Schema:
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+    sessions:
+      description: Path used to manage the list of sessions.
+      type: object
