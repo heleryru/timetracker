@@ -21,6 +21,27 @@
 
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
+    <style>
+
+        #time-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 1rem;
+            grid-auto-rows: minmax(100px, auto);
+        }
+
+        .time-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: .25rem;
+            padding: 1rem;
+        }
+
+        .time-card:hover {
+            background-color: #e9ecef;
+        }
+
+    </style>
 </head>
 <body>
 
@@ -31,7 +52,7 @@
     <div class="container">
         <div class="text-center mt-5">
             <h1>Timetracking and productivity app</h1>
-            <p class="lead">This is a timetracking and productivity app</p>
+            <p class="lead">Keep track of your times spent</p>
             <div class="row">
 
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" v-if="!sessionId"
@@ -46,7 +67,16 @@
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" v-if="sessionId" @click="signOut">
                     Sign Out
                 </button>
+            </div>
 
+            &nbsp;
+
+            <!--List of times-->
+            <div id="time-list">
+                <div v-for="time in times" class="time-card">
+                    {{ time.title }}<br>
+                    {{ time.content }}<br>
+                </div>
             </div>
         </div>
     </div>
@@ -135,15 +165,27 @@
                 signUpPassword: null,
                 signInEmail: null,
                 signInPassword: null,
-                sessionId: null
+                sessionId: null,
+                times: null
             }
         },
         mounted() {
             // Check if the user is already signed in from local storage
             this.sessionId = localStorage.getItem('sessionId')
 
+            // If the user is signed in, get the list of times
+            if (this.sessionId) {
+                this.getTimes()
+            }
         },
         methods: {
+            getTimes() {
+                this.send('GET', '/times').then(response => {
+                    if (response.ok) {
+                        this.times = response.body
+                    }
+                })
+            },
             showModal: function (modalId) {
                 this.modalHandler = new bootstrap.Modal(document.getElementById(modalId), {
                     keyboard: false
@@ -214,6 +256,9 @@
 
                     // Close the modal
                     this.modalHandler.hide()
+
+                    // Get the list of times
+                    this.getTimes()
                 }
             },
             signOut: async function () {
@@ -228,6 +273,7 @@
             clearStorageAndResetSessionId: function () {
                 localStorage.removeItem('sessionId')
                 this.sessionId = null
+                this.times = null
             }
         }
     }).mount('#app')

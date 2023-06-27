@@ -11,22 +11,44 @@ const swaggerUi = require('swagger-ui-express');
 const yamlJs = require('yamljs');
 const swaggerDocument = yamlJs.load('./swagger.yml');
 
+
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.static('public'))
 app.use(express.json())
 
 const users = [
-    {id: 1, email: 'admin', password: '$2b$10$6xlvJct6C0apS5Ck3fEwA.UpfhwkWeVBYSLglrbPrYI38kFBib1eC '} //KollneKollne
+    {id: 1, email: 'admin', password: '$2b$10$d5du1EQ7p4uNmQzMGiGIG.ABQx4iTjpf7fLOIBdZapJ5zWMSPMw.q'} //KollneKollne
+]
+
+const times = [
+    {
+        id: 1,
+        title: 'Time 1',
+        content: 'This is the content of time 1',
+        userId: 1
+    },
+    {
+        id: 2,
+        title: 'Time 2',
+        content: 'This is the content of time 2',
+        userId: 2
+    },
+    {
+        id: 3,
+        title: 'Time 3',
+        content: 'This is the content of time 3',
+        userId: 1
+    }
 ]
 
 let sessions = [
-    // {id: '123', userId: 1}
+    {id: '123', userId: 1}
 ]
 
 function tryToParseJson(jsonString) {
     try {
-        const o = JSON.parse(jsonString);
+        var o = JSON.parse(jsonString);
         if (o && typeof o === "object") {
             return o;
         }
@@ -141,6 +163,15 @@ function authorizeRequest(req, res, next) {
 
 }
 
+app.get('/times', authorizeRequest, (req, res) => {
+
+    // get times for user
+    const timesForUser = times.filter(time => time.userId === req.user.id)
+
+    // Send times to client
+    res.send(timesForUser)
+
+})
 app.delete('/sessions', authorizeRequest, (req, res) => {
 
     // Remove session from sessions array
@@ -160,6 +191,6 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
     console.log(`App running at http://localhost:${port}. Documentation at http://localhost:${port}/docs`)
-})
-
+});
+module.exports = app
 
